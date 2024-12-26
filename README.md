@@ -16,7 +16,7 @@ This repository contains build files for following mongodb versions:
 To build a docker image, first  go to the image directory you want to use in the terminal, f.e:
 
 ```shell
-cd 6.0
+cd 6.0/debian-12
 ```
 
 Then run following docker build command to build and tag an image. The following example will produce an image with the
