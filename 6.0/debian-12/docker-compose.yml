@@ -6,6 +6,7 @@ version: '2'
 services:
   mongodb:
     # image: docker.io/bitnami/mongodb:6.0
+    image: local/bitnami-mongodb:6.0
     build:
       dockerfile: Dockerfile
     ports:

@@ -41,3 +41,6 @@ ln -sf /dev/stdout "$MONGODB_LOG_FILE"
 # Copy all initially generated configuration files to the default directory
 # (this is to avoid breaking when entrypoint is being overridden)
 cp -r "${MONGODB_CONF_DIR}/"* "$MONGODB_DEFAULT_CONF_DIR"
+
+# CHANGE: make the default config directory readable, otherwise there is a read permissions error on startup
+chmod o+r -R "$MONGODB_DEFAULT_CONF_DIR"

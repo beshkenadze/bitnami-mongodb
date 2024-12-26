@@ -51,14 +51,8 @@ RUN apt-get autoremove --purge -y curl && \
     apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 RUN echo install global
-# CHANGE: Install mongodb based on https://github.com/docker-library/mongo/blob/master/6.0/Dockerfile
 
-# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN set -eux; \
-	groupadd --gid 999 --system mongodb; \
-	useradd --uid 999 --system --gid mongodb --home-dir /data/db mongodb; \
-	mkdir -p /data/db /data/configdb; \
-	chown -R mongodb:mongodb /data/db /data/configdb
+# CHANGE: Install mongodb based on https://github.com/docker-library/mongo/blob/master/6.0/Dockerfile
 
 RUN set -eux; \
 	apt-get update; \
@@ -71,10 +65,10 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*
 
 # grab gosu for easy step-down from root (https://github.com/tianon/gosu/releases)
-ENV GOSU_VERSION 1.17
+ENV GOSU_VERSION=1.17
 # grab "js-yaml" for parsing mongod's YAML config files (https://github.com/nodeca/js-yaml/releases)
-ENV JSYAML_VERSION 3.13.1
-ENV JSYAML_CHECKSUM 662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941
+ENV JSYAML_VERSION=3.13.1
+ENV JSYAML_CHECKSUM=662e32319bdd378e91f67578e56a34954b0a2e33aca11d70ab9f4826af24b941
 
 RUN set -eux; \
 	\
@@ -130,11 +124,11 @@ ARG MONGO_PACKAGE=mongodb-org
 ARG MONGO_REPO=repo.mongodb.org
 ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
 
-ENV MONGO_MAJOR 6.0
+ENV MONGO_MAJOR=6.0
 RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
 
 # https://docs.mongodb.org/master/release-notes/6.0/
-ENV MONGO_VERSION 6.0.19
+ENV MONGO_VERSION=6.0.19
 # 10/17/2024, https://github.com/mongodb/mongo/tree/a7ada5ff3a4d8a1e2ed88f86bd6b3d1d16cb43c6
 
 RUN set -x \
@@ -151,7 +145,7 @@ RUN set -x \
 		${MONGO_PACKAGE}-database-tools-extra=$MONGO_VERSION \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mongodb \
-	&& mv /etc/mongod.conf /etc/mongod.conf.orig
+	&& rm -rf /etc/mongod.conf
 
 # CHANGE: Link binaries as in https://github.com/xavidop/mongodb-7-bitnami/blob/main/Dockerfile#L85
 RUN mkdir -p /opt/bitnami/mongodb/bin \
