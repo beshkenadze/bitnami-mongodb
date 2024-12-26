@@ -1,0 +1,10 @@
+global:
+  security:
+    ## @param global.security.allowInsecureImages Allows skipping image verification
+    allowInsecureImages: true
+image:
+  registry: docker.io
+  repository: library/bitnami-mongodb
+  tag: "6.0.13-local"
+  digest: ""
+  pullPolicy: IfNotPresent
