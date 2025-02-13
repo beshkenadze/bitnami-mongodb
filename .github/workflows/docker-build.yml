@@ -16,7 +16,32 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  build-minideb:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: 'arm64,amd64'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build minideb:trixie base image
+        run: |
+          cd 8.0
+          docker build -t minideb-builder -f minideb-trixie-build.Dockerfile .
+          docker run --rm --privileged minideb-builder | docker import - bitnami/minideb:trixie
+
+  build-mongodb:
+    needs: build-minideb
     runs-on: ubuntu-latest
     strategy:
       matrix:
