@@ -1,9 +1,10 @@
 FROM debian:trixie-slim
 
-COPY minideb/buildone /buildone
-COPY minideb/mkimage /mkimage
-COPY minideb/pre-build.sh /pre-build.sh
-COPY minideb/debootstrap/trixie /debootstrap-trixie
+WORKDIR /
+
+COPY mkimage /mkimage
+COPY pre-build.sh /pre-build.sh
+COPY debootstrap/trixie /debootstrap-trixie
 
 RUN apt-get update && apt-get install -y \
     debootstrap \
