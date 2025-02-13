@@ -53,7 +53,7 @@ jobs:
       - name: Build and push Minideb image
         uses: docker/build-push-action@v5
         with:
-          context: 8.0
+          context: 8.0/minideb
           file: 8.0/minideb-trixie-build.Dockerfile
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
