@@ -2,11 +2,13 @@ FROM debian:trixie-slim
 
 WORKDIR /
 
-COPY mkimage /mkimage
-COPY pre-build.sh /pre-build.sh
-COPY debootstrap/trixie /debootstrap-trixie
+COPY minideb/mkimage /mkimage
+COPY minideb/pre-build.sh /pre-build.sh
+COPY minideb/debootstrap/trixie /debootstrap-trixie
+COPY minideb/buildone /buildone
 
-RUN apt-get update && apt-get install -y \
+RUN chmod +x /mkimage /pre-build.sh /buildone && \
+    apt-get update && apt-get install -y \
     debootstrap \
     curl \
     ca-certificates \
