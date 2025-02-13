@@ -4,9 +4,9 @@ ARG DIST=trixie
 ENV DIST=${DIST}
 
 # Copy build scripts
-COPY mkimage /usr/local/bin/mkimage
-COPY buildone /usr/local/bin/buildone
-COPY debootstrap/${DIST} /usr/share/debootstrap/scripts/${DIST}
+COPY 8.0/minideb/mkimage /usr/local/bin/mkimage
+COPY 8.0/minideb/buildone /usr/local/bin/buildone
+COPY 8.0/minideb/debootstrap/${DIST} /usr/share/debootstrap/scripts/${DIST}
 
 # Install required packages
 RUN apt-get update && apt-get install -y \

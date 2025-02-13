@@ -5,4 +5,4 @@ set -e
 docker build \
   -t minideb-builder \
   -f minideb-trixie-build.Dockerfile \
-  8.0/minideb
+  .
