@@ -59,6 +59,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-minideb.outputs.tags }}
           labels: ${{ steps.meta-minideb.outputs.labels }}
+          provenance: false
           cache-from: type=gha,scope=minideb-trixie
           cache-to: type=gha,scope=minideb-trixie,mode=max
 
@@ -114,7 +115,7 @@ jobs:
           REGISTRY: ${{ env.REGISTRY }}
           REPOSITORY: ${{ env.IMAGE_NAME }}
         with:
-          context: ${{ matrix.version }}/${{ matrix.debian }}
+          context: ./${{ matrix.version }}/${{ matrix.debian }}
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
