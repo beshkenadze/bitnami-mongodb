@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: APACHE-2.0
 
 # CHANGE: use minideb:trixie - for now custom build untill officially supported by bitnami
-FROM docker.io/bitnami/minideb:trixie
+FROM minideb:trixie
 
 ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
