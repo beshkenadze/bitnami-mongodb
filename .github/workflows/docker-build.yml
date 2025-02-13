@@ -2,13 +2,13 @@ name: Build and Publish MongoDB Images
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
-      - '6.0/**'
-      - '8.0/**'
-      - '.github/workflows/docker-build.yml'
+      - "6.0/**"
+      - "8.0/**"
+      - ".github/workflows/docker-build.yml"
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 env:
@@ -29,17 +29,10 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: 'arm64,amd64'
+          platforms: "arm64,amd64"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Build minideb:trixie base image
-        id: build-minideb
-        run: |
-          cd 8.0
-          docker build -t ghcr.io/${{ github.repository }}/minideb:trixie -f minideb-trixie-build.Dockerfile .
-          docker run --rm --privileged ghcr.io/${{ github.repository }}/minideb:trixie | docker import - ghcr.io/${{ github.repository }}/minideb:trixie
 
       - name: Log in to GitHub Container Registry
         if: github.event_name != 'pull_request'
@@ -49,9 +42,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push minideb image
-        if: github.event_name != 'pull_request'
-        run: docker push ghcr.io/${{ github.repository }}/minideb:trixie
+      - name: Extract metadata for Minideb
+        id: meta-minideb
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/minideb
+          tags: |
+            type=raw,value=trixie
+
+      - name: Build and push Minideb image
+        uses: docker/build-push-action@v5
+        with:
+          context: 8.0
+          file: 8.0/minideb-trixie-build.Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-minideb.outputs.tags }}
+          labels: ${{ steps.meta-minideb.outputs.labels }}
+          cache-from: type=gha,scope=minideb-trixie
+          cache-to: type=gha,scope=minideb-trixie,mode=max
 
   build-mongodb:
     needs: build-minideb
@@ -59,12 +68,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['6.0', '8.0']
+        version: ["6.0", "8.0"]
         include:
-          - version: '6.0'
-            debian: 'debian-12'
-          - version: '8.0'
-            debian: 'debian-13'
+          - version: "6.0"
+            debian: "debian-12"
+          - version: "8.0"
+            debian: "debian-13"
     permissions:
       contents: read
       packages: write
@@ -76,7 +85,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: 'arm64,amd64'
+          platforms: "arm64,amd64"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -101,11 +110,17 @@ jobs:
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          REPOSITORY: ${{ env.IMAGE_NAME }}
         with:
           context: ${{ matrix.version }}/${{ matrix.debian }}
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/mongodb:buildcache-${{ matrix.version }}
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/mongodb:buildcache-${{ matrix.version }},mode=max
+          build-args: |
+            REGISTRY=${{ env.REGISTRY }}
+            REPOSITORY=${{ env.IMAGE_NAME }}
+          cache-from: type=gha,scope=mongodb-${{ matrix.version }}
+          cache-to: type=gha,scope=mongodb-${{ matrix.version }},mode=max

@@ -1,12 +1,18 @@
-FROM docker.io/debian:bookworm
+FROM debian:trixie-slim
 
-RUN apt-get update; \
-    apt-get install -y make openssh-client
+COPY minideb/buildone /buildone
+COPY minideb/mkimage /mkimage
+COPY minideb/pre-build.sh /pre-build.sh
+COPY minideb/debootstrap/trixie /debootstrap-trixie
 
-WORKDIR /app
-COPY minideb /app
+RUN apt-get update && apt-get install -y \
+    debootstrap \
+    curl \
+    ca-certificates \
+    xz-utils \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN make .installed-requirements
-RUN make trixie
-RUN ./export build/trixie.tar arm64
+RUN /pre-build.sh && /buildone trixie /debootstrap-trixie
+
+CMD ["/mkimage"]
 

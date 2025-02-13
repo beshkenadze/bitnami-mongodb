@@ -1,8 +1,8 @@
 # Copyright Broadcom, Inc. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
 
-# CHANGE: use minideb:trixie - for now custom build untill officially supported by bitnami
-FROM minideb:trixie
+# Use full GHCR path for minideb
+FROM ${REGISTRY:-ghcr.io}/${REPOSITORY:-library}/minideb:trixie
 
 ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
