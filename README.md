@@ -1,4 +1,4 @@
-# bitnami-mongodb-arm
+# mongodb
 
 Amazed by the fact that official `bitnami/mongodb` images are not available for arm64, this repository was created and
 provides build files for custom `bitnami/mongodb` compatible images. These can be used for example with the official
@@ -9,6 +9,7 @@ neither by bitnami nor by mongodb. The resulting images are meant to be only use
 hardware and should not be used on production.
 
 This repository contains build files for following mongodb versions:
+
 - [8.0.4](8.0) based on an own custom bitnami/minideb:trixie image
 - [6.0.13](6.0)
 
@@ -16,16 +17,16 @@ This repository contains build files for following mongodb versions:
 
 ### Use published images
 
-The images built from this repository are published to [Docker Hub](https://hub.docker.com/r/dlavrenuek/bitnami-mongodb-arm).
+The images built from this repository are published to [Docker Hub](https://hub.docker.com/r/beshkenadze/mongodb).
 
 ```
-dlavrenuek/bitnami-mongodb-arm:8.0.4
-dlavrenuek/bitnami-mongodb-arm:6.0.13
+beshkenadze/mongodb:8.0.4
+beshkenadze/mongodb:6.0.13
 ```
 
 ### Build images from source
 
-To build a docker image, first  go to the image directory you want to use in the terminal, f.e:
+To build a docker image, first go to the image directory you want to use in the terminal, f.e:
 
 ```shell
 cd 6.0/debian-12

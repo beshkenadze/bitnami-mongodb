@@ -1,20 +1,22 @@
-# Copyright VMware, Inc.
+# Copyright ${AUTHOR:-beshkenadze}. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
-
-# CHANGE: changed debian version to bookworm (12) from boolseye (11)
-FROM docker.io/bitnami/minideb:bookworm
+# Use full GHCR path for minideb
+FROM ${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/mongodb}/minideb:${MINIDEB_DIST:-bookworm}
 
 ARG TARGETARCH
+ARG MINIDEB_DIST="bookworm"
+ARG AUTHOR="beshkenadze"
 
-LABEL com.vmware.cp.artifact.flavor="sha256:1e1b4657a77f0d47e9220f0c37b9bf7802581b93214fff7d1bd2364c8bf22e8e" \
-      org.opencontainers.image.base.name="docker.io/bitnami/minideb:bullseye" \
-      org.opencontainers.image.created="2024-02-19T15:15:11Z" \
-      org.opencontainers.image.description="Application packaged by VMware, Inc" \
+LABEL org.opencontainers.image.base.name="${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/mongodb}/minideb:${MINIDEB_DIST:-bookworm}" \
+      org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+      org.opencontainers.image.description="Application packaged by ${AUTHOR:-beshkenadze}" \
+      org.opencontainers.image.documentation="https://github.com/${REPOSITORY:-beshkenadze/mongodb}/README.md" \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.ref.name="6.0.13-debian-11-r21" \
+      org.opencontainers.image.ref.name="${MONGO_VERSION:-6.0.13}-debian-${MINIDEB_DIST}-r$(date -u +%Y%m%d)" \
+      org.opencontainers.image.source="https://github.com/${REPOSITORY:-beshkenadze/mongodb}" \
       org.opencontainers.image.title="mongodb" \
-      org.opencontainers.image.vendor="VMware, Inc." \
-      org.opencontainers.image.version="6.0.13"
+      org.opencontainers.image.vendor="${AUTHOR:-beshkenadze}" \
+      org.opencontainers.image.version="${MONGO_VERSION:-6.0.13}"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -30,6 +32,10 @@ SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 # libffi7 -> libffi8
 # libldap-2.4-2 -> libldap-2.5-0
 # libssl1.1 -> libssl3
+
+# Enable stable repository for libunistring5 & libldap
+
+RUN echo "deb http://deb.debian.org/debian stable main" >> /etc/apt/sources.list
 RUN install_packages ca-certificates curl libbrotli1 libcom-err2 libcurl4 libffi8 libgcc-s1 libgcrypt20 libgmp10 libgnutls30 libgpg-error0 libgssapi-krb5-2 libhogweed6 libidn2-0 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap-2.5-0 liblzma5 libnettle8 libnghttp2-14 libp11-kit0 libpsl5 librtmp1 libsasl2-2 libssh2-1 libssl3 libtasn1-6 libunistring2 numactl procps zlib1g
 RUN mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ ; \
     COMPONENTS=( \

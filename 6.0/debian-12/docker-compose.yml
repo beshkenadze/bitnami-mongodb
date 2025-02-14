@@ -1,18 +1,18 @@
 # Copyright VMware, Inc.
 # SPDX-License-Identifier: APACHE-2.0
 
-version: '2'
+version: "2"
 
 services:
   mongodb:
-    # image: docker.io/dlavrenuek/bitnami-mongodb-arm:6.0.13
+    # image: docker.io/beshkenadze/mongodb:6.0.13
     image: bitnami-mongodb:6.0.13-local
     build:
       dockerfile: Dockerfile
     ports:
       - "27017:27017"
     volumes:
-      - 'mongodb_data:/bitnami/mongodb'
+      - "mongodb_data:/bitnami/mongodb"
 
 volumes:
   mongodb_data:

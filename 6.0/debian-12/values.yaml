@@ -4,6 +4,6 @@ global:
     allowInsecureImages: true
 image:
   registry: docker.io
-  repository: dlavrenuek/bitnami-mongodb-arm
+  repository: beshkenadze/mongodb
   tag: "6.0.13"
   digest: ""

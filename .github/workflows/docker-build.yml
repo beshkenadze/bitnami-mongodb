@@ -18,6 +18,10 @@ env:
 jobs:
   build-minideb:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dist: ["trixie", "bookworm"]
     permissions:
       contents: read
       packages: write
@@ -48,20 +52,22 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/minideb
           tags: |
-            type=raw,value=trixie
+            type=raw,value=${{ matrix.dist }}
 
       - name: Build and push Minideb image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./minideb-trixie-build.Dockerfile
+          file: ./minideb-build.Dockerfile
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-minideb.outputs.tags }}
           labels: ${{ steps.meta-minideb.outputs.labels }}
+          build-args: |
+            DIST=${{ matrix.dist }}
           provenance: false
-          cache-from: type=gha,scope=minideb-trixie
-          cache-to: type=gha,scope=minideb-trixie,mode=max
+          cache-from: type=gha,scope=minideb-${{ matrix.dist }}
+          cache-to: type=gha,scope=minideb-${{ matrix.dist }},mode=max
 
   build-mongodb:
     needs: build-minideb
@@ -69,12 +75,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["6.0", "8.0"]
         include:
           - version: "6.0"
             debian: "debian-12"
+            dist: "bookworm"
           - version: "8.0"
             debian: "debian-13"
+            dist: "trixie"
     permissions:
       contents: read
       packages: write
@@ -114,6 +121,7 @@ jobs:
         env:
           REGISTRY: ${{ env.REGISTRY }}
           REPOSITORY: ${{ env.IMAGE_NAME }}
+          MINIDEB_DIST: ${{ matrix.dist }}
         with:
           context: ./${{ matrix.version }}/${{ matrix.debian }}
           platforms: linux/amd64,linux/arm64
@@ -123,5 +131,6 @@ jobs:
           build-args: |
             REGISTRY=${{ env.REGISTRY }}
             REPOSITORY=${{ env.IMAGE_NAME }}
+            MINIDEB_DIST=${{ matrix.dist }}
           cache-from: type=gha,scope=mongodb-${{ matrix.version }}
           cache-to: type=gha,scope=mongodb-${{ matrix.version }},mode=max
