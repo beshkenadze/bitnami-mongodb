@@ -19,7 +19,7 @@ make build
 This will create and load following images to the local docker repository:
 
 - `bitnami/minideb:trixie`
-- `beshkenadze/mongodb:8.0.4`
+- `beshkenadze/bitnami-mongodb:8.0.4`
 
 If minideb based on debian 13 is already released (see tags in [official repository](https://hub.docker.com/r/bitnami/minideb/tags?name=trixie))
 you only need to build mongodb:

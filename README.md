@@ -17,11 +17,11 @@ This repository contains build files for following mongodb versions:
 
 ### Use published images
 
-The images built from this repository are published to [Docker Hub](https://hub.docker.com/r/beshkenadze/mongodb).
+The images built from this repository are published to [Docker Hub](https://hub.docker.com/r/beshkenadze/bitnami-mongodb).
 
 ```
-beshkenadze/mongodb:8.0.4
-beshkenadze/mongodb:6.0.13
+beshkenadze/bitnami-mongodb:8.0.4
+beshkenadze/bitnami-mongodb:6.0.13
 ```
 
 ### Build images from source

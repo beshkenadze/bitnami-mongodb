@@ -4,6 +4,6 @@ global:
     allowInsecureImages: true
 image:
   registry: docker.io
-  repository: beshkenadze/mongodb
-  tag: "6.0.13"
+  repository: beshkenadze/bitnami-mongodb
+  tag: "6.0.9"
   digest: ""

@@ -4,13 +4,13 @@
 services:
   mongodb:
     # image: docker.io/bitnami/mongodb:8.0-local
-    image: bitnami-mongodb:8.0.4-local
+    image: docker pull ghcr.io/beshkenadze/bitnami-mongodb/mongodb:8.0
     build:
       dockerfile: Dockerfile
     ports:
       - "27017:27017"
     volumes:
-      - 'mongodb_data:/bitnami/mongodb'
+      - "mongodb_data:/bitnami/mongodb"
 
 volumes:
   mongodb_data:

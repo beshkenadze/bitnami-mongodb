@@ -4,7 +4,7 @@ set -e
 set -u
 set -o pipefail
 
-DISTS=${DISTS:-"bullseye
+DISTS=${DISTS:-"bookworm
 bookworm
 trixie
 latest

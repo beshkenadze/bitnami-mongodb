@@ -1,6 +1,6 @@
-FROM debian:trixie-slim
-
 ARG DIST=trixie
+FROM debian:${DIST}-slim
+
 ENV DIST=${DIST}
 
 # Copy build scripts
@@ -8,8 +8,9 @@ COPY minideb/mkimage /usr/local/bin/mkimage
 COPY minideb/buildone /usr/local/bin/buildone
 COPY minideb/debootstrap/${DIST} /usr/share/debootstrap/scripts/${DIST}
 
-# Install required packages
-RUN apt-get update && apt-get install -y \
+# Install required packages and verify DIST value
+RUN echo "Building for DIST=${DIST}" && \
+    apt-get update && apt-get install -y \
     debootstrap \
     curl \
     ca-certificates \
@@ -19,5 +20,5 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /build
 
-# Run build using shell form to allow variable expansion
-CMD buildone $DIST
+# Use JSON form for CMD to handle signals properly
+CMD ["sh", "-c", "buildone $DIST"]

@@ -1,20 +1,20 @@
 # Copyright ${AUTHOR:-beshkenadze}. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
-
+ARG MINIDEB_DIST="trixie"
+ARG AUTHOR="beshkenadze"
 # Use full GHCR path for minideb
-FROM ${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/mongodb}/minideb:trixie
+FROM ${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/bitnami-mongodb}/minideb:${MINIDEB_DIST:-trixie}
 
 ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
-ARG AUTHOR="beshkenadze"
 
-LABEL org.opencontainers.image.base.name="${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/mongodb}/minideb:trixie" \
+LABEL org.opencontainers.image.base.name="${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/bitnami-mongodb}/minideb:${MINIDEB_DIST:-trixie}" \
       org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
       org.opencontainers.image.description="Application packaged by ${AUTHOR:-beshkenadze}" \
-      org.opencontainers.image.documentation="https://github.com/${REPOSITORY:-beshkenadze/mongodb}/README.md" \
+      org.opencontainers.image.documentation="https://github.com/${REPOSITORY:-beshkenadze/bitnami-mongodb}/README.md" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.ref.name="8.0.4-debian-13" \
-      org.opencontainers.image.source="https://github.com/${REPOSITORY:-beshkenadze/mongodb}" \
+      org.opencontainers.image.source="https://github.com/${REPOSITORY:-beshkenadze/bitnami-mongodb}" \
       org.opencontainers.image.title="mongodb" \
       org.opencontainers.image.vendor="${AUTHOR:-beshkenadze}" \
       org.opencontainers.image.version="8.0.4"

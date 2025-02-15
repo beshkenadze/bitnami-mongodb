@@ -19,7 +19,7 @@ esac
 
 work_out_debs () {
 	case "$CODENAME" in
-		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
+		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bookworm|bookworm)
 			# always compute for bookworm and earlier
 			required="$(get_debs Priority: required)"
 			;;
@@ -40,7 +40,7 @@ work_out_debs () {
 		# explicitly add mawk because we cannot resolve base-files's
 		# virtual pre-depends on awk
 		case "$CODENAME" in
-			etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
+			etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bookworm|bookworm)
 				# only apply this for trixie and later
 				;;
 			*) required="mawk $(get_debs Essential: yes)";;
@@ -77,7 +77,7 @@ work_out_debs () {
 	# On suites > bookworm there are no longer usr-is-merged or usrmerge
 	# packages, so ensure the dependency is pruned if present.
 	case "$CODENAME" in
-		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye)
+		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bookworm)
 			;;
 		bookworm)
 			required="$required usr-is-merged"
@@ -118,7 +118,7 @@ first_stage_install () {
 		etch*|lenny|squeeze|wheezy|jessie*|stretch)
 			[ -z "$MERGED_USR" ] && MERGED_USR="no"
 		;;
-		buster|bullseye|bookworm)
+		buster|bookworm|bookworm)
 			[ -z "$MERGED_USR" ] && doing_variant buildd && MERGED_USR="no"
 		;;
 	esac

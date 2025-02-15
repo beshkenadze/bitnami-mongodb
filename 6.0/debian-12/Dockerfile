@@ -1,22 +1,23 @@
 # Copyright ${AUTHOR:-beshkenadze}. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
 # Use full GHCR path for minideb
-FROM ${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/mongodb}/minideb:${MINIDEB_DIST:-bookworm}
+ARG MINIDEB_DIST="bookworm"
+
+FROM ${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/bitnami-mongodb}/minideb:${MINIDEB_DIST:-bookworm}
 
 ARG TARGETARCH
-ARG MINIDEB_DIST="bookworm"
 ARG AUTHOR="beshkenadze"
 
-LABEL org.opencontainers.image.base.name="${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/mongodb}/minideb:${MINIDEB_DIST:-bookworm}" \
+LABEL org.opencontainers.image.base.name="${REGISTRY:-ghcr.io}/${REPOSITORY:-beshkenadze/bitnami-mongodb}/minideb:${MINIDEB_DIST:-bookworm}" \
       org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
       org.opencontainers.image.description="Application packaged by ${AUTHOR:-beshkenadze}" \
-      org.opencontainers.image.documentation="https://github.com/${REPOSITORY:-beshkenadze/mongodb}/README.md" \
+      org.opencontainers.image.documentation="https://github.com/${REPOSITORY:-beshkenadze/bitnami-mongodb}/README.md" \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.ref.name="${MONGO_VERSION:-6.0.13}-debian-${MINIDEB_DIST}-r$(date -u +%Y%m%d)" \
-      org.opencontainers.image.source="https://github.com/${REPOSITORY:-beshkenadze/mongodb}" \
+      org.opencontainers.image.ref.name="${MONGO_VERSION:-6.0.1}-debian-${MINIDEB_DIST}-r$(date -u +%Y%m%d)" \
+      org.opencontainers.image.source="https://github.com/${REPOSITORY:-beshkenadze/bitnami-mongodb}" \
       org.opencontainers.image.title="mongodb" \
       org.opencontainers.image.vendor="${AUTHOR:-beshkenadze}" \
-      org.opencontainers.image.version="${MONGO_VERSION:-6.0.13}"
+      org.opencontainers.image.version="${MONGO_VERSION:-6.0.20}"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -26,14 +27,19 @@ ENV HOME="/" \
 COPY prebuildfs /
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 # Install required system packages and dependencies
-# CHANGE: "mongodb-6.0.13-4-linux-${OS_ARCH}-debian-11" is removed from list because it is not available as arm64
+# CHANGE: "mongodb-6.0.20-4-linux-${OS_ARCH}-debian-11" is removed from list because it is not available as arm64
 # CHANGE: "mongodb-shell-2.1.4-0-linux-${OS_ARCH}-debian-11" removed because it will be built as part of mongodb image
 # CHANGE: update package versions to match debian 12 compatibility
 # libffi7 -> libffi8
 # libldap-2.4-2 -> libldap-2.5-0
 # libssl1.1 -> libssl3
 
-RUN install_packages ca-certificates curl libbrotli1 libcom-err2 libcurl4 libffi8 libgcc-s1 libgcrypt20 libgmp10 libgnutls30 libgpg-error0 libgssapi-krb5-2 libhogweed6 libidn2-0 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap-2.5-0 liblzma5 libnettle8 libnghttp2-14 libp11-kit0 libpsl5 librtmp1 libsasl2-2 libssh2-1 libssl3 libtasn1-6 libunistring2 numactl procps zlib1g
+RUN install_packages wget curl gnupg software-properties-common apt-transport-https lsb-release ca-certificates curl libbrotli1 libcom-err2 libcurl4 libffi8 libgcc-s1 libgcrypt20 libgmp10 libgnutls30 libgpg-error0 libgssapi-krb5-2 libhogweed6 libidn2-0 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap-2.5-0 liblzma5 libnettle8 libnghttp2-14 libp11-kit0 libpsl5 librtmp1 libsasl2-2 libssh2-1 libssl3 libtasn1-6 libunistring2 numactl procps zlib1g
+
+#import the GPG key for the MongoDB repository
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc| gpg --dearmor -o /etc/apt/trusted.gpg.d/mongodb-6.gpg
+# Add the MongoDB 6.0 repository to the system.
+
 RUN mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ ; \
     COMPONENTS=( \
       "yq-4.41.1-0-linux-${OS_ARCH}-debian-11" \
@@ -125,14 +131,17 @@ RUN set -eux; \
 # Example: docker build --build-arg MONGO_PACKAGE=mongodb-enterprise --build-arg MONGO_REPO=repo.mongodb.com .
 ARG MONGO_PACKAGE=mongodb-org
 ARG MONGO_REPO=repo.mongodb.org
-ENV MONGO_PACKAGE=${MONGO_PACKAGE} MONGO_REPO=${MONGO_REPO}
+ARG MONGO_MAJOR=6.0
+ARG MONGO_VERSION=6.0.20
 
-ENV MONGO_MAJOR=6.0
-RUN echo "deb [ signed-by=/etc/apt/keyrings/mongodb.asc ] http://$MONGO_REPO/apt/ubuntu jammy/${MONGO_PACKAGE%-unstable}/$MONGO_MAJOR multiverse" | tee "/etc/apt/sources.list.d/${MONGO_PACKAGE%-unstable}.list"
-
-# https://docs.mongodb.org/master/release-notes/6.0/
-ENV MONGO_VERSION=6.0.13
-# 10/17/2024, https://github.com/mongodb/mongo/tree/a7ada5ff3a4d8a1e2ed88f86bd6b3d1d16cb43c6
+ENV MONGO_PACKAGE=${MONGO_PACKAGE} 
+ENV MONGO_REPO=${MONGO_REPO}
+ENV MONGO_MAJOR=${MONGO_MAJOR} 
+ENV MONGO_VERSION=${MONGO_VERSION}
+# bookworm is code name for Debian 12 since Debian 11 is not supported anymore
+RUN echo "deb http://${MONGO_REPO}/apt/ubuntu jammy/${MONGO_PACKAGE}/${MONGO_MAJOR} multiverse" | tee /etc/apt/sources.list.d/${MONGO_PACKAGE}-${MONGO_MAJOR}.list
+# ARM64 support
+# RUN echo "deb [arch=arm64] http://${MONGO_REPO}/apt/debian bookworm/${MONGO_PACKAGE}/${MONGO_MAJOR} main" | tee -a /etc/apt/sources.list.d/${MONGO_PACKAGE}-${MONGO_MAJOR}.list
 
 RUN set -x \
 # installing "mongodb-enterprise" pulls in "tzdata" which prompts for input
@@ -165,7 +174,7 @@ RUN find / -perm /6000 -type f -exec chmod a-s {} \; || true
 
 COPY rootfs /
 RUN /opt/bitnami/scripts/mongodb/postunpack.sh
-ENV APP_VERSION="6.0.13" \
+ENV APP_VERSION="6.0.20" \
     BITNAMI_APP_NAME="mongodb" \
     PATH="/opt/bitnami/common/bin:/opt/bitnami/mongodb/bin:$PATH"
 

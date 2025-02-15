@@ -43,6 +43,7 @@ log() {
 
 build() {
     DIST=$1
+    echo "buildone script running for DIST=${DIST}"
     PLATFORM=${2:-amd64}
     TAG=$DIST-$PLATFORM
 

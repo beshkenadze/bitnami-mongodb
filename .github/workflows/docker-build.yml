@@ -53,6 +53,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/minideb
           tags: |
             type=raw,value=${{ matrix.dist }}
+            type=raw,value=${{ matrix.dist }}-latest
 
       - name: Build and push Minideb image
         uses: docker/build-push-action@v5
@@ -79,9 +80,11 @@ jobs:
           - version: "6.0"
             debian: "debian-12"
             dist: "bookworm"
+            mongo_version: "6.0.20"
           - version: "8.0"
             debian: "debian-13"
             dist: "trixie"
+            mongo_version: "8.0.0"
     permissions:
       contents: read
       packages: write
@@ -114,6 +117,7 @@ jobs:
           tags: |
             type=raw,value=${{ matrix.version }}
             type=raw,value=${{ matrix.version }}-${{ matrix.debian }}
+            type=raw,value=${{ matrix.mongo_version }}
             type=raw,value=latest,enable=${{ matrix.version == '8.0' }}
 
       - name: Build and push Docker image
@@ -132,5 +136,8 @@ jobs:
             REGISTRY=${{ env.REGISTRY }}
             REPOSITORY=${{ env.IMAGE_NAME }}
             MINIDEB_DIST=${{ matrix.dist }}
+            MONGO_VERSION=${{ matrix.mongo_version }}
+            MONGO_MAJOR=${{ matrix.version }}
+            TARGETARCH=${{ runner.os == 'Linux' && 'arm64' || 'amd64' }}
           cache-from: type=gha,scope=mongodb-${{ matrix.version }}
           cache-to: type=gha,scope=mongodb-${{ matrix.version }},mode=max

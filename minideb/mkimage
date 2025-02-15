@@ -83,7 +83,7 @@ if [ "$DIST" == "trixie" ]; then
 elif [ "$DIST" == "bookworm" ]; then
     echo "deb ${repo_url} $DIST-updates main" >> "$rootfsDir/etc/apt/sources.list"
     echo "deb ${sec_repo_url_1} $DIST-security main" >> "$rootfsDir/etc/apt/sources.list"
-elif [ "$DIST" == "bullseye" ]; then
+elif [ "$DIST" == "bookworm" ]; then
     echo "deb ${repo_url} $DIST-updates main" >> "$rootfsDir/etc/apt/sources.list"
     echo "deb ${sec_repo_url_2} $DIST-security main" >> "$rootfsDir/etc/apt/sources.list"
 fi
